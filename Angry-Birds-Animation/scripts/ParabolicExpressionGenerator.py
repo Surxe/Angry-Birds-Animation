@@ -28,7 +28,20 @@ def apply_parabolic_motion():
         angle = float(mc.promptDialog(query=True, text=True))
     else:
         return  # Exit if the user cancels the prompt
+    
+    scaler = mc.promptDialog(
+        title='Time Sclaer', 
+        message='Enter a Scaler:', 
+        button=['OK', 'Cancel'], 
+        defaultButton='OK', 
+        cancelButton='Cancel', 
+        dismissString='Cancel')
 
+    if scaler == 'OK':
+        scaler = float(mc.promptDialog(query=True, text=True))
+    else:
+        return  # Exit if the user cancels the prompt
+    
     gravity = 9.8  # Gravity constant in m/s^2 
 
     # Ensure exactly one object is selected
@@ -89,7 +102,7 @@ def apply_parabolic_motion():
         float $startY = {var1}.startPosY;
         float $startTime = {var1}.startTime;
 
-        float $elapsedTime = time - $startTime; // Calculate elapsed time since motion began
+        float $elapsedTime = (time - $startTime) * {scaler}; // Calculate elapsed time since motion began, scaled with a scaler
 
         float $posY = $startY + ({velY} * $elapsedTime - 0.5 * {gravity} * $elapsedTime * $elapsedTime); // Vertical motion
         float $posX = $startX + {velX} * $elapsedTime; // Horizontal motion
