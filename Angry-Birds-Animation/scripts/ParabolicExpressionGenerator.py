@@ -94,38 +94,48 @@ def apply_parabolic_motion():
     expression_name = f"{var1}_parabolicMotion"
     if mc.objExists(expression_name):
         mc.delete(expression_name)
-
+    
     # Create the MEL-style expression
     expression = f"""
-    if (frame >= {startFrame}) {{
-        if (`getAttr {var1}.startTime` == 0) {{
-            {var1}.startPosZ = {var1}.translateZ;
-            {var1}.startPosY = {var1}.translateY;
-            {var1}.startTime = time; // Store the time when the toggle was activated
-        }}
-
-        float $startZ = {var1}.startPosZ;
-        float $startY = {var1}.startPosY;
-        float $startTime = {var1}.startTime;
-
-        float $elapsedTime = (time - $startTime) * {scaler};
-        float $posY = $startY + ({velY} * $elapsedTime - 0.5 * {gravity} * $elapsedTime * $elapsedTime);
-        float $posZ = $startZ + {velZ} * $elapsedTime;
-
-        if ($posY > -600) {{
-            {var1}.translateY = $posY;
-            {var1}.translateZ = $posZ;
-        }}
-    }}
+        //print("Current Frame: " + frame + "\\n");
+        
+        if (frame >= {startFrame}) {{
+            if ({var1}.startTime == 0) {{
+                {var1}.startPosZ = {var1}.translateZ;
+                {var1}.startPosY = {var1}.translateY;
+                {var1}.startTime = time; // Store the time when the toggle was activated
+                
+                print("Start Pos Z: " + {var1}.startPosZ + "\\n");
+                print("Start Pos Y: " + {var1}.startPosY + "\\n");
+                print("Start Time: " + {var1}.startTime + "\\n");
+            }}
     
-    if(frame == 1)
-    {{
+            float $startZ = {var1}.startPosZ;
+            float $startY = {var1}.startPosY;
+            float $startTime = {var1}.startTime;
+    
+            $startZ = {var1}.startPosZ;
+            $startY = {var1}.startPosY;
+            $startTime = {var1}.startTime;
+    
+            float $elapsedTime = (time - $startTime) * {scaler};
+            float $posY = $startY + ({velY} * $elapsedTime - 0.5 * {gravity} * $elapsedTime * $elapsedTime);
+            float $posZ = $startZ + {velZ} * $elapsedTime;
+    
+            if ($posY > -800) {{
+                {var1}.translateY = $posY;
+                {var1}.translateZ = $posZ;
+            }}
+        }}
+    
+        else {{
+            {var1}.startTime = 0;
             {var1}.translateY = 0;
             {var1}.translateZ = 0;
             {var1}.translateX = 0;
-    }} 
+        }}
     """
-
+    
     # Apply the expression
     mc.expression(s=expression, name=expression_name)
     print(f"Parabolic motion applied to {var1} with velocity={velocity} m/s and angle={angle} degrees.")
